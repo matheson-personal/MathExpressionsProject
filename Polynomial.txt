@@ -1,0 +1,292 @@
+//Lesson 2 answers - polynomial
+//AT PRESENT NOTHING IS TESTED
+
+import Function;
+import java.util.Arrays;
+Import java.util.stream.*;
+
+
+public class Polynomial extends Function{
+
+	ArrayList<Double> coefficients; //coefficients with index equal to power
+
+
+	public Polynomial() {
+		coefficients = new ArrayList<Double>();
+	}
+
+
+	public Polynomial(ArrayList<Double> coeffs) {
+		this.coefficients = coeffs;
+	}
+
+
+	public Polynomial(Collection<Double> coeffs) {
+		this.coefficients = new ArrayList<Double>(coeffs);
+	}
+
+
+	public int getDegree() {
+		return this.coefficients.size();
+	}
+
+
+	public ArrayList<Double> getCoefficients() {
+		return this.coefficients;
+	}
+
+
+	public String singleTerm(double coeff, int power) {
+		//helper function for toString that returns the term for a given power and coefficient
+
+		switch (power) {
+			case 0:
+				return " + " + coeff;
+
+			case 1:
+				return " + " + coeff + "x";
+
+			default:
+				return " + " + coeff + "x^" + power;
+		}
+	}
+
+
+	public String singleTerm(int power) {
+		//helper function for toString that returns the term for a given power (automatically grabs corresponding coefficient)
+
+		double coeff = this.get(power);
+
+		switch (power) {
+			case 0:
+				return " + " + coeff;
+
+			case 1:
+				return " + " + coeff + "x";
+
+			default:
+				return " + " + coeff + "x^" + power;
+		}
+	}
+
+
+	public String toString() {
+		int i = 0;
+		StringBuilder message = new StringBuilder();
+		ArrayDeque<String> terms = new ArrayDeque<>(10);
+		boolean addThis;
+
+		for (int power=0, power < this.getDegree(), power++) {
+			coeff = this.get(power);
+
+			if (i==10) {
+				terms.add("+ ...");	//adding to the back rather than front
+				break; 			//maybe it should be at the front idk
+			}
+
+			if (coeff == 0.0) {
+				continue;
+			}
+
+
+			terms.addFirst(this.singleTerm(coeff, power));
+			i++;
+		}
+
+
+		/* remove if the stream stuff works
+		message.append(terms.pop().subString(3));
+
+		while (!terms.empty()) { 
+			message.append(terms.pop());
+		}
+		*/
+
+
+		StringBuilder message = terms.stream().collect(StringBuilder::new, StringBuilder::append, StringBuilder::append);
+
+		return message.toString();
+	}
+
+
+
+	public String toString(int loPow, int hiPow) {
+		StringBuilder message = new StringBuilder();
+		int li = this.getDegree()
+
+		for(int i=loPow; i<=hiPow; i++) {
+			if (i > li) {
+				message.append(this.singleTerm(i));
+			}
+		}
+
+		return message.toString();
+	}
+
+
+	//TODO there's probably a more efficient way to do the below, but not a big issue really
+	private void removeTrailingZeroes() {
+		int li = this.getDegree() - 1		//last index
+
+		while (this.get(li) == 0) {
+			this.coefficients.remove(li);
+			li--;				//decrement li since list has shortened
+
+		}
+
+
+	public void add(int index, double coefficient) {
+		this.coefficients.add(index, coefficient);
+		this.removeTrailingZeroes(); //this will rarely do anything but whatever inexpensive
+	}
+
+
+	public void remove(int index) {
+		this.coefficients.remove(index);
+		this.removeTrailingZeroes();
+	}
+
+
+	public double get(int index) {
+		return this.coefficients.get(index);
+	}
+
+
+	public void set(int index, double input) {
+		this.coefficients.set(index, input);
+	}
+
+
+	public ArrayList<double> get(int startIndex, int endIndex) {
+		return this.coefficients.subList(startIndex, endIndex);
+	}
+
+	@Override
+	public double evaluate(Number yep) {
+		double tot = this.get(0);
+		Number r = yep;
+
+		for (coeff : this.coefficients) {
+			tot += yep*coeff;
+			yep *= r;
+		}
+
+		return tot;
+	}
+
+
+
+	//could make it compatible with more types of list but i can't be bothered rn
+
+	public ArrayList<Double> evaluate(ArrayList<Double> toEval) {
+		ArrayList<Double> evaluated = new ArrayList<>();
+
+		for (yep : toEval) {
+			evaluated.add(this.evaluate(yep)); //this will use the single Number version above
+		}
+
+		return evaluated;
+	}
+
+	@Override
+	public Polynomial differentiate() {
+		ArrayList<Double> differentiated = new ArrayList<>();
+
+		for (int i=1; i < this.getDegree(); i++) {
+			Double currentTerm = this.get(i);
+			differentiated.add(i*currentTerm);
+		}
+
+		return new Polynomial(differentiated);
+
+
+		/* cooler version with streams - don't know if it's faster or if it works
+		differentiated = IntStream.range(1, this.getDegree())
+		                          .mapToDouble( (i) -> i * this.get(i) )
+		                          .toList();
+
+		return new Polynomial(differentiated);
+		*/
+	}
+
+
+	public double newtonRaphson(double startx) {
+		Polynomial fprime = this.differentiate();
+
+		double x = startx;
+		double f = this.evaluate(startx);
+
+		while (f > minError) {
+			x -= f/fprime.evaluate(x);
+			y = this.evaluate(x);
+		}
+
+		return x;
+	}
+
+
+	public Polynomial addPolynomial(Polynomial that) {
+		ArrayList<Double> newCoeff = new ArrayList<Double>;
+		int terms2add;
+		boolean thisBigger
+
+		if (this.getDegree() > that.getDegree()) {
+			terms2add = that.getDegree();
+			thisBigger = true;
+			ArrayList<Double> newCoeff = new ArrayList<Double>(this.getDegree());
+		} else {
+			terms2add = this.getDegree();
+			thisBigger = false;
+			ArrayList<Double> newCoeff = new ArrayList<Double>(that.getDegree());
+		}
+
+
+		for (int i=0; i<terms2add; i++) {
+			newCoeff.add(this.get(i) + that.get(i));
+		}
+
+
+		if (thisBigger) { //may as well not add 0 to every component and do the rest at once
+			newCoeff.addAll(terms2add, this.coefficients.subList(terms2add));
+		} else {
+			newCoeff.addAll(terms2add, that.coefficients.subList(terms2add));
+		}
+
+
+		return new Polynomial(newCoeff);
+	}
+
+//recopy for sub there's a bug somewhere
+
+	public Polynomial subPolynomial(Polynomial that) {
+		int terms2add;
+		boolean thisBigger
+
+		if (this.getDegree() > that.getDegree()) {
+			terms2add = that.getDegree();
+			thisBigger = true;
+		} else {
+			terms2add = this.getDegree();
+			thisBigger = true;
+		}
+
+
+		for (int i=0; i<terms2add; i++) {
+			newCoeff.add(this.get(i) - that.get(i));
+		}
+
+
+		if (thisBigger) { //may as well not add 0 to every component and do the rest at once
+			newCoeff.addAll(terms2add, this.coefficients.subList(terms2add));
+		} else {
+			newCoeff.addAll(terms2add, that.coefficients.subList(terms2add));
+		}
+
+
+		return new Polynomial(newCoeff);
+	}		
+}
+
+
+
+

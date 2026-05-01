@@ -1,0 +1,14 @@
+//Function
+
+//Abstract Function class to ensure base functionality
+
+public abstract class Function {
+
+	public abstract double evaluate( Number x );
+	//evaluates the function at x and returns the result as a double
+
+	public abstract Function differentiate();
+	//performs differentiation on the expression and returns the result as a Function
+}
+
+//can't think of any other needed general functionality (haha) atm
