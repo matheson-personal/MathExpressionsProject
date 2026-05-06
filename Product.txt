@@ -1,0 +1,114 @@
+//Product
+//The product of two or more Function objects
+
+import Function;
+import Expression;
+import java.util.Arrays;
+Import java.util.stream.*;
+
+
+public class Product extends Function{
+
+	ArrayList<Function> functionProducts;
+	Sting functionType = 'x[';
+
+
+	public Function(Collection fp) {
+		ArrayList<Function> functionProducts = new ArrayList<Function>(fp);
+
+		for (f : functionProducts) {
+			functionType += ", " + f.getFunctionType(); //ideally stringbuilder but this is ok for now TODO
+		}
+
+		functionType += "]";
+	}
+
+
+	public String getFunctionType() {
+		return this.functionType;
+	}
+
+
+
+	//EXPRESSION YET TO BE DEFINED!! It will be an object holding functions that just sums them
+	@Override
+	public Expression differentiate() {
+		/*uses product rule to differentiate the product of two or more Functions. Returns an Expression 
+		containing Products with each element of this Product differentiated and multiplied by the rest.
+
+		i.e.
+		d(uv)/dx = uv' + vu'
+		*/
+
+		Expression sum = new Expression();
+
+		for (int i=0; i < this.functionProducts.size(); i++) {
+			Function ddx = this.getFunc(i).differentiate();
+			Product yep = new Product( this.ddxHelper(i).add(ddx) );
+			sum.add(yep);
+			}
+
+		return sum;
+	}
+
+
+
+
+
+	public ArrayList<Function> ddxHelper(i) {
+		/*returns a shallow copy of the Function list sans i, to clean up the differentiation method*/
+
+		ArrayList<Function> copy = (ArrayList)this.functionProducts.clone();
+		return copy.remove(i);
+		}
+
+
+
+	@Override
+	//perhaps overengineered, may turn into a for loop as the performance difference is negligible/worse for short lists
+	public double evaluate(Number yep) {
+
+		double result = functionProducts.stream().reduce(1.0, (double a, Function b) -> a * b.evaluate(yep), (a,b) -> a*b)
+
+		return result;
+	}
+
+
+
+	//p sure this would work. Couldn't think of a parallelisable way of multiplying the function evals together in java
+	//maybe there's a sequence of maptos that would work TODO?
+
+	@Override
+	public ArrayList<Double> evaluate(ArrayList<Double> toEval) {
+		/*Accepts ArrayList<Double> of inputs returns the product of all Functions contained inside
+		this object evaluated at those points as another ArrayList<Double>*/
+
+		ArrayList<ArrayList<Double>> toMultiply = new ArrayList<<ArrayList<Double>>();
+
+
+		for (int i = 0; i < functionProducts.size(); i++) {
+			/* below is fine but I think I'll shift responsibility to each function to evaluate the list
+			//STEAL THIS FOR INDIVIDUAL FUNCTION LIST EVALUATION
+
+			Function currentFunc = this.getFunc(i);
+			funcEvals = toEval.stream.mapToDouble(x -> currentFunc.evaluate(x)).toList();
+			toMultiply.add(funcEvals);
+			*/
+
+			toMultiply.add(this.getFunc(i).evaluate(toEval);
+		}
+
+
+		for (int j=0; j < toEvalute.size(); j++) {
+			double p = 1;
+
+			for (int k=0; k < this.functionProducts.size(); k++) {
+				p *= toMultiply.get(k).get(j);
+			}
+
+			results.add(p);
+		}
+
+		return results;
+	}
+}

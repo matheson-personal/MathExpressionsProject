@@ -36,6 +36,12 @@ public class Polynomial extends Function{
 	}
 
 
+	@Override
+	public String getFuncType() {
+		return "p"
+	}
+
+
 	public String singleTerm(double coeff, int power) {
 		//helper function for toString that returns the term for a given power and coefficient
 
@@ -178,6 +184,7 @@ public class Polynomial extends Function{
 
 	//could make it compatible with more types of list but i can't be bothered rn
 
+	@Override
 	public ArrayList<Double> evaluate(ArrayList<Double> toEval) {
 		ArrayList<Double> evaluated = new ArrayList<>();
 
@@ -210,15 +217,22 @@ public class Polynomial extends Function{
 	}
 
 
-	public double newtonRaphson(double startx) {
+	//maybe overload with another parameter to specify max iterations before it gives up
+	public double newtonRaphson(double startx, double minError) {
 		Polynomial fprime = this.differentiate();
 
 		double x = startx;
 		double f = this.evaluate(startx);
 
+		int i = 0;
 		while (f > minError) {
 			x -= f/fprime.evaluate(x);
 			y = this.evaluate(x);
+			i++;
+
+			if i==1000 {	//kind of temporary
+				System.out.println("Newton-Raphson for "+this.toString()+"exceeded 1000 iterations.");
+				break;
 		}
 
 		return x;
@@ -256,27 +270,28 @@ public class Polynomial extends Function{
 		return new Polynomial(newCoeff);
 	}
 
-//recopy for sub there's a bug somewhere
+
+	//subPolynomial will NOT work yet. problem is with the sublist section
 
 	public Polynomial subPolynomial(Polynomial that) {
 		int terms2add;
 		boolean thisBigger
 
 		if (this.getDegree() > that.getDegree()) {
-			terms2add = that.getDegree();
+			terms2sub = that.getDegree();
 			thisBigger = true;
 		} else {
-			terms2add = this.getDegree();
+			terms2sub = this.getDegree();
 			thisBigger = true;
 		}
 
 
-		for (int i=0; i<terms2add; i++) {
+		for (int i=0; i<terms2sub; i++) {
 			newCoeff.add(this.get(i) - that.get(i));
 		}
 
 
-		if (thisBigger) { //may as well not add 0 to every component and do the rest at once
+		if (thisBigger) { //must turn all terms negative here not sure how i will do it
 			newCoeff.addAll(terms2add, this.coefficients.subList(terms2add));
 		} else {
 			newCoeff.addAll(terms2add, that.coefficients.subList(terms2add));
