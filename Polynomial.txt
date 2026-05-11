@@ -8,11 +8,20 @@ Import java.util.stream.*;
 
 public class Polynomial extends Function{
 
-	ArrayList<Double> coefficients; //coefficients with index equal to power
+	public ArrayList<Double> coefficients; //coefficients with index equal to power
+	public Function substituteForX;
+	public boolean isParameterised = false;
 
 
 	public Polynomial() {
-		coefficients = new ArrayList<Double>();
+		this.coefficients = new ArrayList<Double>();
+	}
+
+
+	public Polynomial(Function u) {
+		this.coefficients = new ArrayList<Double>();
+		this.substituteForX = u;
+		this.isParameterised = true;
 	}
 
 
@@ -25,6 +34,21 @@ public class Polynomial extends Function{
 		this.coefficients = new ArrayList<Double>(coeffs);
 	}
 
+
+	public Polynomial(ArrayList<Double> coeffs, Function u) {
+		this.coefficients = coeffs;
+		this.substituteForX = u;
+		this.isParameterised = true;
+	}
+
+
+	public Polynomial(Collection<Double> coeffs, Function u) {
+		this.coefficients = new ArrayList<Double>(coeffs);
+		this.substituteForX = u;
+		this.isParameterised = true;
+	}
+
+	//i sometimes hate that java overrides as above and doesn't accept optional arguments whateverrrrr
 
 	public int getDegree() {
 		return this.coefficients.size();
@@ -168,13 +192,20 @@ public class Polynomial extends Function{
 	}
 
 	@Override
-	public double evaluate(Number yep) {
+	public double evaluate(double input) {
 		double tot = this.get(0);
-		Number r = yep;
+
+		if (isParameterised) {
+			double x0 = this.getU().evaluate(input);
+		} else {
+			double x0 = input
+		}
+
+		Number xn = x0;
 
 		for (coeff : this.coefficients) {
-			tot += yep*coeff;
-			yep *= r;
+			tot += xn*coeff;
+			xn *= x0;
 		}
 
 		return tot;
@@ -184,6 +215,7 @@ public class Polynomial extends Function{
 
 	//could make it compatible with more types of list but i can't be bothered rn
 
+	//below is not parallelisable TODO
 	@Override
 	public ArrayList<Double> evaluate(ArrayList<Double> toEval) {
 		ArrayList<Double> evaluated = new ArrayList<>();
@@ -194,6 +226,7 @@ public class Polynomial extends Function{
 
 		return evaluated;
 	}
+
 
 	@Override
 	public Polynomial differentiate() {
@@ -212,12 +245,19 @@ public class Polynomial extends Function{
 		                          .mapToDouble( (i) -> i * this.get(i) )
 		                          .toList();
 
-		return new Polynomial(differentiated);
-		*/
+		if (isParameterised) { 							//just chain rule
+			Function uPrime = this.getU().differentiate; 			// du/dx
+			Function fPrime = Polynomial(differentiated, this.getU()); 	// df/du
+			return Product(uPrime, fPrime); 				// df/dx = du/dx * df/du
+
+		} else {
+			return new Polynomial(differentiated);
+		}
 	}
 
 
 	//maybe overload with another parameter to specify max iterations before it gives up
+	//considering moving this to the abstract class since this method is general and only uses methods from Function
 	public double newtonRaphson(double startx, double minError) {
 		Polynomial fprime = this.differentiate();
 
@@ -299,7 +339,22 @@ public class Polynomial extends Function{
 
 
 		return new Polynomial(newCoeff);
-	}		
+	}
+
+	@Override
+	public Boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+
+        	if (o == null || getClass() != o.getClass()) {
+            		return false;
+        	}	
+
+		Polynomial otherPoly = (Polynomial) otherPoly;
+
+		return (this.getcoefficients().equals(otherPoly.getCoefficients()));
+	}
 }
 
 
