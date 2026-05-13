@@ -4,10 +4,10 @@
 import Function;
 import Expression;
 import java.util.Arrays;
-Import java.util.stream.*;
+import java.util.stream.*;
+import Sum;
 
-
-public class Product extends Function{
+public class Product extends Expression{
 
 	ArrayList<Function> functionProducts;
 	Sting functionType = 'x[';
@@ -17,7 +17,7 @@ public class Product extends Function{
 		ArrayList<Function> functionProducts = new ArrayList<Function>(fp);
 
 		for (f : functionProducts) {
-			functionType += ", " + f.getFunctionType(); //ideally stringbuilder but this is ok for now TODO
+			functionType += ", " + f.getFunctionType(); //ideally stringbuilder but this is ok for now (maybe forever) TODO
 		}
 
 		functionType += "]";
@@ -68,7 +68,14 @@ public class Product extends Function{
 	//perhaps overengineered, may turn into a for loop as the performance difference is negligible/worse for short lists
 	public double evaluate(Number yep) {
 
-		double result = functionProducts.stream().reduce(1.0, (double a, Function b) -> a * b.evaluate(yep), (a,b) -> a*b)
+		double result = this.functionProducts.stream().reduce(1.0, (double a, Function b) -> a * b.evaluate(yep), (a,b) -> a*b)
+
+		/* for loop
+		double result = 1;
+		for (f : this.functionProducts) {
+			result *= f.evaluate(yep);
+		}
+		*/
 
 		return result;
 	}

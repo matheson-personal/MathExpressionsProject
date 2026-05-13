@@ -9,19 +9,10 @@ Import java.util.stream.*;
 public class Polynomial extends Function{
 
 	public ArrayList<Double> coefficients; //coefficients with index equal to power
-	public Function substituteForX;
-	public boolean isParameterised = false;
 
 
 	public Polynomial() {
 		this.coefficients = new ArrayList<Double>();
-	}
-
-
-	public Polynomial(Function u) {
-		this.coefficients = new ArrayList<Double>();
-		this.substituteForX = u;
-		this.isParameterised = true;
 	}
 
 
@@ -34,21 +25,6 @@ public class Polynomial extends Function{
 		this.coefficients = new ArrayList<Double>(coeffs);
 	}
 
-
-	public Polynomial(ArrayList<Double> coeffs, Function u) {
-		this.coefficients = coeffs;
-		this.substituteForX = u;
-		this.isParameterised = true;
-	}
-
-
-	public Polynomial(Collection<Double> coeffs, Function u) {
-		this.coefficients = new ArrayList<Double>(coeffs);
-		this.substituteForX = u;
-		this.isParameterised = true;
-	}
-
-	//i sometimes hate that java overrides as above and doesn't accept optional arguments whateverrrrr
 
 	public int getDegree() {
 		return this.coefficients.size();
@@ -66,7 +42,7 @@ public class Polynomial extends Function{
 	}
 
 
-	public String singleTerm(double coeff, int power) {
+	public String singleTerm(double coeff, int power, String base) {
 		//helper function for toString that returns the term for a given power and coefficient
 
 		switch (power) {
@@ -74,15 +50,15 @@ public class Polynomial extends Function{
 				return " + " + coeff;
 
 			case 1:
-				return " + " + coeff + "x";
+				return " + " + coeff + base;
 
 			default:
-				return " + " + coeff + "x^" + power;
+				return " + " + coeff + base + "^" + power;
 		}
 	}
 
 
-	public String singleTerm(int power) {
+	public String singleTerm(int power, String base) {
 		//helper function for toString that returns the term for a given power (automatically grabs corresponding coefficient)
 
 		double coeff = this.get(power);
@@ -92,19 +68,28 @@ public class Polynomial extends Function{
 				return " + " + coeff;
 
 			case 1:
-				return " + " + coeff + "x";
+				return " + " + coeff + base;
 
 			default:
-				return " + " + coeff + "x^" + power;
+				return " + " + coeff + base + "^" + power;
 		}
 	}
 
 
+	// DOESN'T TAKE INTO ACCOUNT THAT IF PARAMETERISED MULTIPLE TIMES IT WILL NEED ANOTHER BASE TO DISTINGUISH
+	// perhaps each Function in an Expression should be given its own letter with the deepest being functions in x
+
+	// Future me here. This is still an issue, but responsibility will be referred to the new Functional class
+	// the deepest level will always be x, and every other function in an expression will be f_ followed by a unique integer
+
+	// this will require a decent amount of thought TODO
 	public String toString() {
 		int i = 0;
 		StringBuilder message = new StringBuilder();
 		ArrayDeque<String> terms = new ArrayDeque<>(10);
 		boolean addThis;
+
+		String base = "x";
 
 		for (int power=0, power < this.getDegree(), power++) {
 			coeff = this.get(power);
@@ -115,11 +100,11 @@ public class Polynomial extends Function{
 			}
 
 			if (coeff == 0.0) {
-				continue;
+				continue;		//this clause means that i only increments when a term is added
 			}
 
 
-			terms.addFirst(this.singleTerm(coeff, power));
+			terms.addFirst(this.singleTerm(coeff, power, base));
 			i++;
 		}
 
@@ -137,6 +122,46 @@ public class Polynomial extends Function{
 
 		return message.toString();
 	}
+
+
+	public String toString(String base) {
+		int i = 0;
+		StringBuilder message = new StringBuilder();
+		ArrayDeque<String> terms = new ArrayDeque<>(10);
+		boolean addThis;
+
+		for (int power=0, power < this.getDegree(), power++) {
+			coeff = this.get(power);
+
+			if (i==10) {
+				terms.add("+ ...");	//adding to the back rather than front
+				break; 			//maybe it should be at the front idk
+			}
+
+			if (coeff == 0.0) {
+				continue;		//this clause means that i only increments when a term is added
+			}
+
+
+			terms.addFirst(this.singleTerm(coeff, power, base));
+			i++;
+		}
+
+
+		/* remove if the stream stuff works
+		message.append(terms.pop().subString(3));
+
+		while (!terms.empty()) { 
+			message.append(terms.pop());
+		}
+		*/
+
+
+		StringBuilder message = terms.stream().collect(StringBuilder::new, StringBuilder::append, StringBuilder::append);
+
+		return message.toString();
+	}
+
 
 
 
@@ -163,6 +188,7 @@ public class Polynomial extends Function{
 			li--;				//decrement li since list has shortened
 
 		}
+	}
 
 
 	public void add(int index, double coefficient) {
@@ -191,21 +217,15 @@ public class Polynomial extends Function{
 		return this.coefficients.subList(startIndex, endIndex);
 	}
 
+
 	@Override
 	public double evaluate(double input) {
 		double tot = this.get(0);
-
-		if (isParameterised) {
-			double x0 = this.getU().evaluate(input);
-		} else {
-			double x0 = input
-		}
-
-		Number xn = x0;
+		double xn = input;
 
 		for (coeff : this.coefficients) {
 			tot += xn*coeff;
-			xn *= x0;
+			xn *= input;
 		}
 
 		return tot;
@@ -223,6 +243,9 @@ public class Polynomial extends Function{
 		for (yep : toEval) {
 			evaluated.add(this.evaluate(yep)); //this will use the single Number version above
 		}
+
+		//below is stream version to be tested
+		//evaluated = toEval.stream.mapToDouble(x -> this.evaluate(x)).toList();
 
 		return evaluated;
 	}
@@ -244,15 +267,10 @@ public class Polynomial extends Function{
 		differentiated = IntStream.range(1, this.getDegree())
 		                          .mapToDouble( (i) -> i * this.get(i) )
 		                          .toList();
+		*/
 
-		if (isParameterised) { 							//just chain rule
-			Function uPrime = this.getU().differentiate; 			// du/dx
-			Function fPrime = Polynomial(differentiated, this.getU()); 	// df/du
-			return Product(uPrime, fPrime); 				// df/dx = du/dx * df/du
+		return new Polynomial(differentiated);
 
-		} else {
-			return new Polynomial(differentiated);
-		}
 	}
 
 
@@ -314,15 +332,15 @@ public class Polynomial extends Function{
 	//subPolynomial will NOT work yet. problem is with the sublist section
 
 	public Polynomial subPolynomial(Polynomial that) {
-		int terms2add;
-		boolean thisBigger
+		int terms2sub;
+		boolean thisBigger;
 
 		if (this.getDegree() > that.getDegree()) {
 			terms2sub = that.getDegree();
 			thisBigger = true;
 		} else {
 			terms2sub = this.getDegree();
-			thisBigger = true;
+			thisBigger = false;
 		}
 
 
@@ -331,10 +349,13 @@ public class Polynomial extends Function{
 		}
 
 
-		if (thisBigger) { //must turn all terms negative here not sure how i will do it
-			newCoeff.addAll(terms2add, this.coefficients.subList(terms2add));
+		//not sure if below implementation works PLEASE TEST
+		if (thisBigger) {
+			ArrayList<Double> extraTerms = this.coefficients.subList(terms2sub).stream().mapToDouble(x -> -x).toList();
+			newCoeff.addAll(terms2sub, extraTerms);
 		} else {
-			newCoeff.addAll(terms2add, that.coefficients.subList(terms2add));
+			ArrayList<Double> extraTerms = that.coefficients.subList(terms2sub).stream().mapToDouble(x -> -x).toList();
+			newCoeff.addAll(terms2sub, extraTerms);
 		}
 
 
@@ -351,7 +372,7 @@ public class Polynomial extends Function{
             		return false;
         	}	
 
-		Polynomial otherPoly = (Polynomial) otherPoly;
+		Polynomial otherPoly = (Polynomial) o;
 
 		return (this.getcoefficients().equals(otherPoly.getCoefficients()));
 	}
