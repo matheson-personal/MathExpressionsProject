@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Product extends Expression {
 
 	ArrayList<Function> functionProducts;
-	String functionType = "x[";
+	String functionSignature = "x[";
 
 
 	public Product() {
@@ -17,13 +17,13 @@ public class Product extends Expression {
 		this.functionProducts = new ArrayList<Function>(fp);
 
 		for (Function f : functionProducts) {
-			functionType += ", " + f.getFuncType(); //ideally stringbuilder but this is ok for now (maybe forever) TODO
+			this.functionSignature += ", " + f.getFuncSignature(); //ideally stringbuilder but this is ok for now (maybe forever) TODO
 		}
 	}
 
-
-	public String getFunctionType() {
-		return this.functionType + "]";
+	@Override
+	public String getFuncSignature() {
+		return this.functionSignature + "]";
 	}
 
 
@@ -121,7 +121,7 @@ public class Product extends Expression {
 	@Override
 	public void add(Function f) {
 		this.getFuncList().add(f);
-		this.functionType += f.getFuncType();
+		this.functionSignature += f.getFuncSignature();
 	}
 
 
@@ -130,7 +130,7 @@ public class Product extends Expression {
 		this.getFuncList().addAll(fs);
 
 		for (Function f : fs) {
-			this.functionType += f.getFuncType();
+			this.functionSignature += f.getFuncSignature();
 		}
 	}
 
@@ -143,7 +143,7 @@ public class Product extends Expression {
 
 	@Override
 	public String getFuncType() {
-		return this.functionType;
+		return "x";
 	}
 
 

@@ -1,23 +1,26 @@
 //Functional
 
 import java.util.ArrayList;
-import java.util.stream.*;
 
 
 public class Functional extends Function {
 
 	public Function f;
 	public Function u;
-	public String functionType;
+	public String functionSignature;
 
 	public Functional(Function outerFunction, Function subForX) {
 		this.f = outerFunction;
 		this.u = subForX;
 
-		functionType = f.getFuncType() + "(" + u.getFuncType() + ")";
+		functionSignature = f.getFuncType() + "(" + u.getFuncType() + ")";
 	}
 
 
+	public String getFuncSignature() {
+		return this.functionSignature;
+	}
+	
 	public Function getU() {
 		return this.u;
 	}
@@ -37,14 +40,14 @@ public class Functional extends Function {
 	}
 
 
-	public String toString(String basef, String baseu) {
+	public String toStringCustom(String basef, String baseu) {
 		//Check if u is a functional otherwise it gets printed twice TODO
 		//a proper toString for a Big function with many parts is a big ask
 
 		String fu = this.getF().toStringCustom(basef);
 		String ux = this.getU().toStringCustom(baseu);
 
-		return fu + "\nWhere u(" + baseu+ ") = " + ux;
+		return "f(u) = " + fu + "\nWhere u(" + baseu+ ") = " + ux;
 	}
 
 
@@ -98,6 +101,6 @@ public class Functional extends Function {
 
 	@Override
 	public String getFuncType() {
-		return this.functionType;
+		return "F";
 	}
 }

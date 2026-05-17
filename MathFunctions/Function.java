@@ -22,6 +22,8 @@ public abstract class Function {
 	public abstract String getFuncType();
 	//returns the functype to see if terms can be collected 
 	//(further checks may be necessary but this method is necessary for the initial step)
+
+	public abstract String getFuncSignature();
 }
 
 //can't think of any other needed general functionality (haha) atm

@@ -1,10 +1,9 @@
 //Polynomial
-//AT PRESENT NOTHING IS TESTED
+//all but add and subPolynomial have been teseted p sure
+//oh and newton raphson but low priority and should be moved to superclass
 
-import java.util.stream.*;
 import java.util.ArrayList;
 import java.util.ArrayDeque;
-
 
 public class Polynomial extends Function{
 
@@ -44,6 +43,12 @@ public class Polynomial extends Function{
 	}
 
 
+	@Override
+	public String getFuncSignature() {
+		return this.getFuncType();
+	}
+
+	
 	public String singleTerm(double coeff, int power, String base) {
 		//helper function for toString that returns the term for a given power and coefficient
 
@@ -183,12 +188,22 @@ public class Polynomial extends Function{
 
 		while (this.get(li) == 0) {
 			this.coefficients.remove(li);
-			li--;				//decrement li since list has shortened
+			li--;							//decrement li since list has shortened
 
 		}
 	}
 
+	
+	public void add(double coefficient) {
+		this.coefficients.add(coefficient);
+	}
 
+	
+	public void addAll(ArrayList<Double> coefficients) {
+		this.coefficients.addAll(coefficients);
+	}
+	
+	
 	public void add(int index, double coefficient) {
 		this.coefficients.add(index, coefficient);
 		this.removeTrailingZeroes(); //this will rarely do anything but whatever inexpensive
@@ -216,8 +231,8 @@ public class Polynomial extends Function{
 		double tot = this.get(0);
 		double xn = input;
 
-		for (double coeff : this.coefficients) {
-			tot += xn*coeff;
+		for (int i=1; i<this.getDegree(); i++) {
+			tot += xn*this.get(i);
 			xn *= input;
 		}
 
@@ -270,12 +285,11 @@ public class Polynomial extends Function{
 
 		double x = startx;
 		double f = this.evaluate(startx);
-		double y;
 
 		int i = 0;
 		while (f > minError) {
 			x -= f/fprime.evaluate(x);
-			y = this.evaluate(x);
+			f = this.evaluate(x);
 			i++;
 
 			if (i==1000) {	//kind of temporary

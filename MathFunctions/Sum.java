@@ -2,39 +2,27 @@
 
 //The sum of 2 or more Functions
 
-import java.util.stream.*;
 import java.util.ArrayList;
 
 public class Sum extends Expression {
 
-	ArrayList<Function> functionsToSum;
-	ArrayList<Double> coefficients;
-	String functionType = "+[";
+	ArrayList<Function> functionsToSum = new ArrayList<Function>();
+	ArrayList<Double> coefficients = new ArrayList<Double>();
+	String functionSignature = "+[";
 
 	public Sum() {
-		ArrayList<Function> functionsToSum = new ArrayList<Function>(); //unsure if this is necessary. 80% sure it is
-		ArrayList<Double> coefficients = new ArrayList<Double>();
+		//the lists are already predefined so I can be lazy and call addAll on the other constructors
+		//so nothing for this guy to do :(((((((
 	}
 
 
 	public Sum(ArrayList<Function> fs) { //Doesn't check if function is a sum TODO (can just be subsumed into the main sum)
-		functionsToSum = fs;
-		coefficients = new ArrayList<Double>();
-
-		for (int i=0; i<fs.size(); i++) {
-			coefficients.add(1.0);
-			this.functionType += fs.get(i).getFuncType();
-		}
+		this.addAll(fs);
 	}
 
 
 	public Sum(ArrayList<Function> fs, ArrayList<Double> cs) {
-		functionsToSum = fs;
-		coefficients = cs;
-
-		for (Function f : fs) {
-			this.functionType += f.getFuncType();
-		}
+		this.addAll(fs, cs);
 	}
 
 
@@ -58,40 +46,43 @@ public class Sum extends Expression {
 	}
 
 
-	@Override
-	public void add(Function f) {
-		this.getFs().add(f);
-		this.getCs().add(1.0);
+	//maybe have this in the superclass?
+	public void add(Function f, double c) {
 
-		this.functionType += f.getFuncType();
+		if (f.getFuncType() == "+") {
+			Sum sumDetected = (Sum) f;
+			this.addAll(sumDetected.getFs());
+
+		} else if (f.getFuncType() == "k") {
+			System.out.println("Time to implement collecting constants");
+
+		} else {
+			this.getFs().add(f);
+			this.getCs().add(c);
+			this.functionSignature += f.getFuncSignature();
+		}
 	}
 
-
-	public void add(Function f, double c) {
-		this.getFs().add(f);
-		this.getCs().add(c);
-
-		this.functionType += f.getFuncType();
+	
+	@Override
+	public void add(Function f) {
+		this.add(f, 1.0); //lazy and clean B)
 	}
 
 
 	@Override
 	public void addAll(ArrayList<Function> fs) {
-		this.getFs().addAll(fs);
 
-		for (int i=0; i<fs.size(); i++) {
-			coefficients.add(1.0);
-			this.functionType += fs.get(i).getFuncType();
+		for (Function f : fs) {
+			this.add(f); //must be checked individually if they're sums, so may as well use the individual method
 		}
 	}
 
 
 	public void addAll(ArrayList<Function> fs, ArrayList<Double> cs) {
-		this.getFs().addAll(fs);
-		this.getCs().addAll(cs);
 
-		for (Function f : fs) {
-			this.functionType += f.getFuncType();
+		for (int i = 0; i < fs.size(); i++) {
+			this.add(fs.get(i), cs.get(i));
 		}
 	}
 
@@ -152,10 +143,15 @@ public class Sum extends Expression {
 
 
 	@Override
-	public String getFuncType() {
-		return this.functionType + "]";
+	public String getFuncSignature() {
+		return this.functionSignature + "]";
 	}
 
+	
+	@Override
+	public String getFuncType() {
+		return "+";
+	}
 
 	//just not a priority rn i can't be askkedddduhh
 	@Override
