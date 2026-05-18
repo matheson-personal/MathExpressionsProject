@@ -118,7 +118,7 @@ public class Sum extends Expression {
 
 
 		for (int j=0; j < toEval.size(); j++) {
-			double p = 1;
+			double p = 0;
 
 			for (int k=0; k < this.getFs().size(); k++) {
 				p += toSum.get(k).get(j);

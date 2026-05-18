@@ -114,6 +114,7 @@ public class testFile {
 		ArrayList<Function> toSum = new ArrayList<Function>();
 		toSum.add(extraPoly); toSum.add(atInit); toSum.add(ddx);
 		//3x^3 + 2x^2 + x + 0,   2.0x^3 + 1.0x^2 + 3.0x + 7.0,   3.0 + 2.0x + 6.0x^2
+		//in total i believe 5x^3 + 9x^2 + 6x + 10
 
 
 		Sum internalSum = new Sum();
@@ -126,9 +127,11 @@ public class testFile {
 		Polynomial AugustusGloop = new Polynomial();
 		AugustusGloop.add(9.0); AugustusGloop.add(-8.0); AugustusGloop.add(5.0);
 		// 5x^2 - 8x + 9
+		// for some reason naming a function Augustus Gloop is hilarious to me
 		
 		internalSum.add(Whatever);
 		internalSum.add(AugustusGloop);
+		//in total x^3 + 3x^2 - 9x - 4
 		
 		
 		toSum.add(internalSum);
@@ -143,6 +146,23 @@ public class testFile {
 		}
 		
 		allAtOnceSum.addAll(toSum);
+		
+		for (double i = 0.0; i < 4; i++) {
+			System.out.print(allAtOnceSum.evaluate(i)+" ");
+			System.out.print(oneByOneSum.evaluate(i)+" ");
+			System.out.print(atInitSum.evaluate(i)+" ");
+			//should print 15 15 15 34 34 34 121 121 121 312 312 312
+		}
+		
+		System.out.println(atInitSum.evaluate(calcAtOnce));
+		System.out.println();
+
+		ArrayList<Function> toMultiply = new ArrayList<Function>();
+		toMultiply.add(atInitSum); toMultiply.add(AugustusGloop);
+		Product xOneByOne = new Product();
+		Product xAllAtOnce = new Product();
+		Product xAtInit = new Product(toMultiply);
+		
 	}
 
 }
