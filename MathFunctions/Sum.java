@@ -16,7 +16,7 @@ public class Sum extends Expression {
 	}
 
 
-	public Sum(ArrayList<Function> fs) { //Doesn't check if function is a sum TODO (can just be subsumed into the main sum)
+	public Sum(ArrayList<Function> fs) {
 		this.addAll(fs);
 	}
 
@@ -165,6 +165,41 @@ public class Sum extends Expression {
 	public String toStringCustom(String base) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	@Override
+	public String saveString(int depth) {
+		/* Looks like
+		 * + {1.0, 1.0, 1.0, -1.0, 1.0} [
+		 * 		p {1.0, 2.0, 3.0, 4.0};
+		 * 		e {1.0, 2.0};
+		 * 		... rest of Functions similarly
+		 * ]
+		 */
+		StringBuilder ss = new StringBuilder();
+		int numElements = this.getCs().size();
+		
+		ss.append(this.tabs(depth));
+		ss.append("+ {");
+
+		for (Double c : this.getCs().subList(0, numElements)){ //don't remember if sublist is inclusive or exclusive on the end COULD BE A BUG TODO
+			ss.append(c);
+			ss.append(", ");
+		}
+
+		ss.append(this.getCoeff(numElements));
+		ss.append("} [\n");
+
+		for (Function f : this.getFs()) {
+			ss.append(f.saveString(depth + 1));
+			ss.append(";\n");
+		}
+
+		ss.append(this.tabs(depth));
+		ss.append("]");
+
+		return ss.toString();
 	}
 }
 	

@@ -386,6 +386,22 @@ public class Polynomial extends Function{
 
 		return (this.getCoefficients().equals(otherPoly.getCoefficients()));
 	}
+
+
+	@Override
+	public String saveString(int depth) {
+		StringBuilder yep = new StringBuilder();
+
+		yep.append(this.tabs(depth));
+		yep.append("p{");
+
+		for (Double i : this.getCoefficients()) {
+			yep.append(i.toString());
+		}
+
+		yep.append("}");
+		return yep.toString();
+	}
 }
 
 

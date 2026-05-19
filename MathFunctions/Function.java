@@ -24,6 +24,27 @@ public abstract class Function {
 	//(further checks may be necessary but this method is necessary for the initial step)
 
 	public abstract String getFuncSignature();
+	//short String showing the structure of Function.
+
+	public abstract String saveString(int depth);
+	//Returns a String to save so a function can be reloaded. The Function is readable in the text file as well
+	//Depth is a helper variable showing how many tabs to indent by
+
+	public String saveString() {
+		return this.saveString(0);
+	}
+	
+	public String tabs(int times) {
+		if (times == 0) { return "";}
+
+		StringBuilder tabs = new StringBuilder();
+
+		for (int i=0; i<times; i++) {
+			tabs.append("	");
+		}
+
+		return tabs.toString();
+	}
 }
 
 //can't think of any other needed general functionality (haha) atm

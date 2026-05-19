@@ -5,21 +5,21 @@ import java.util.ArrayList;
 
 public class Product extends Expression {
 
-	ArrayList<Function> functionProducts;
+	ArrayList<Function> functionProducts = new ArrayList<Function>();
 	String functionSignature = "x[";
 
 
 	public Product() {
-		functionProducts = new ArrayList<Function>();
+		//the lists are already predefined so I can be lazy and call addAll on the other constructors
+		//so nothing for this guy to do :(((((((
 	}
 
-	public Product( ArrayList<Function> fp ) {
-		this.functionProducts = new ArrayList<Function>(fp);
 
-		for (Function f : functionProducts) {
-			this.functionSignature += ", " + f.getFuncSignature(); //ideally stringbuilder but this is ok for now (maybe forever) TODO
-		}
+	public Product(ArrayList<Function> fs) {
+		this.addAll(fs);
 	}
+
+
 
 	@Override
 	public String getFuncSignature() {
@@ -27,11 +27,11 @@ public class Product extends Expression {
 	}
 
 
-	public ArrayList<Function> getFuncList() {
+	public ArrayList<Function> getFs() {
 		return this.functionProducts;
 	}
 
-	//EXPRESSION YET TO BE DEFINED!! It will be an object holding functions that just sums them
+
 	@Override
 	public Expression differentiate() {
 		/*uses product rule to differentiate the product of two or more Functions. Returns an Expression 
@@ -62,7 +62,7 @@ public class Product extends Expression {
 	public ArrayList<Function> ddxHelper(int i) {
 		/*returns a shallow copy of the Function list sans i, to clean up the differentiation method*/
 		ArrayList<Function> copy = new ArrayList<Function>();
-		for (int j=0; j < this.getFuncList().size(); j++) {
+		for (int j=0; j < this.getFs().size(); j++) {
 
 			if (j==i) { continue; }
 			copy.add(this.getFunc(j));
@@ -118,19 +118,36 @@ public class Product extends Expression {
 	}
 
 
+	/*
 	@Override
 	public void add(Function f) {
-		this.getFuncList().add(f);
+		this.getFs().add(f);
 		this.functionSignature += f.getFuncSignature();
 	}
+	*/
+
+	
+	public void add(Function f) {
+
+		if (f.getFuncType() == "x") {
+			Product productDetected = (Product) f;
+			this.addAll(productDetected.getFs());
+
+		} else if (f.getFuncType() == "k") {
+			System.out.println("Time to implement collecting constants");
+
+		} else {
+			this.getFs().add(f);
+			this.functionSignature += f.getFuncSignature();
+		}
+	}
+
 
 
 	@Override
 	public void addAll(ArrayList<Function> fs) {
-		this.getFuncList().addAll(fs);
-
 		for (Function f : fs) {
-			this.functionSignature += f.getFuncSignature();
+			this.add(f);
 		}
 	}
 
@@ -151,5 +168,31 @@ public class Product extends Expression {
 	public String toStringCustom(String base) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	
+	@Override
+	public String saveString(int depth) {
+		/* Looks like
+		 * x {} [
+		 * 		p {1.0, 2.0, 3.0, 4.0};
+		 * 		e {1.0, 2.0};
+		 * 		... rest of Functions similarly
+		 * ]
+		 */
+		StringBuilder ss = new StringBuilder();
+		
+		ss.append(this.tabs(depth));
+		ss.append("x {} [\n");
+
+		for (Function f : this.getFs()) {
+			ss.append(f.saveString(depth + 1));
+			ss.append(";\n");
+		}
+
+		ss.append(this.tabs(depth));
+		ss.append("]");
+
+		return ss.toString();
 	}
 }

@@ -96,7 +96,7 @@ public class testFile {
 		System.out.println();
 		Product FalDdx = (Product) FalTest.differentiate(); //in this case I know it's a product. Maybe I should set it to the return type since things can be simplified later todo????
 		
-		for (Function f : FalDdx.getFuncList()) {
+		for (Function f : FalDdx.getFs()) {
 			System.out.println(f.toString());
 		}
 		/* should print

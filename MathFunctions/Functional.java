@@ -103,4 +103,17 @@ public class Functional extends Function {
 	public String getFuncType() {
 		return "F";
 	}
+
+
+	@Override
+	public String saveString(int depth) {
+		StringBuilder ss = new StringBuilder();
+
+		ss.append(this.getF().saveString(depth));
+		ss.append("(\n");
+		ss.append(this.getU().saveString(depth + 1));
+		ss.append("\n)");
+
+		return ss.toString();
+	}
 }
