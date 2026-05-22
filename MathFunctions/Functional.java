@@ -105,6 +105,13 @@ public class Functional extends Function {
 	}
 
 
+	/*
+	 * looks like
+	 * p {1.0, 2.0, 3.0, 4.0} (
+	 * 		e {1.0, 2.0}
+	 * )
+	 * this looks nicer imo but the method below can use methods used for parsing expression, and standardises the fact that
+	 * Functions are always listed in square brackets and end in semicolons
 	@Override
 	public String saveString(int depth) {
 		StringBuilder ss = new StringBuilder();
@@ -113,6 +120,32 @@ public class Functional extends Function {
 		ss.append("(\n");
 		ss.append(this.getU().saveString(depth + 1));
 		ss.append("\n)");
+
+		return ss.toString();
+	}
+	*/
+
+	@Override
+	public String saveString(int depth) {
+		/* Looks like
+		 * f {} [
+		 * 		p {1.0, 2.0, 3.0, 4.0};
+		 * 		e {1.0, 2.0};
+		 * ]
+		 */
+		StringBuilder ss = new StringBuilder();
+
+		ss.append(this.tabs(depth));
+		ss.append("f {} [\n");
+
+		ss.append(this.getU().saveString(depth + 1));
+		ss.append(";\n");
+		ss.append(this.getF().saveString(depth + 1));
+		ss.append(";\n");
+
+
+		ss.append(this.tabs(depth));
+		ss.append("]");
 
 		return ss.toString();
 	}

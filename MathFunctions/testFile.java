@@ -123,6 +123,7 @@ public class testFile {
 		Whatever.add(-4.0); Whatever.add(-1.0); Whatever.add(2.0); Whatever.add(1.0);
 		// x^3 + 2x^2 - x - 4 haven't tested -ves yet so this is worthwhile as well
 		// TODO make -ves look nicer with the toString
+		// TODO let initialisation take Arrays just so it takes less characters to type when testing
 		
 		Polynomial AugustusGloop = new Polynomial();
 		AugustusGloop.add(9.0); AugustusGloop.add(-8.0); AugustusGloop.add(5.0);
