@@ -5,6 +5,9 @@ import java.util.ArrayList;
  * 		think about custom written functions being used in formulae - u {funcName, filepath(?)}
  * 			-> make a new object to point to function, or add name variable to superclass
  * 			-> Loader object can store loaded functions? maybe then functions shouldn't be static, at least parseFunction?
+ * 
+ * 		funcName can be the key for a map containing loaded custom functions
+ * 		u {funcName} tries to access it, but if it fails alerts the user that it hasn't been loaded in
  */
 public class Loader {
 
