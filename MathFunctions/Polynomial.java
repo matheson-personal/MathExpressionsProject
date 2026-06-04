@@ -278,30 +278,6 @@ public class Polynomial extends Function{
 	}
 
 
-	//maybe overload with another parameter to specify max iterations before it gives up
-	//considering moving this to the abstract class since this method is general and only uses methods from Function
-	public double newtonRaphson(double startx, double minError) {
-		Polynomial fprime = this.differentiate();
-
-		double x = startx;
-		double f = this.evaluate(startx);
-
-		int i = 0;
-		while (f > minError) {
-			x -= f/fprime.evaluate(x);
-			f = this.evaluate(x);
-			i++;
-
-			if (i==1000) {	//kind of temporary
-				System.out.println("Newton-Raphson for "+this.toString()+"exceeded 1000 iterations.");
-				break;
-			}
-		}
-
-		return x;
-	}
-
-
 	public Polynomial addPolynomial(Polynomial that) {
 		ArrayList<Double> newCoeff;
 		int terms2add;
@@ -393,12 +369,14 @@ public class Polynomial extends Function{
 		StringBuilder yep = new StringBuilder();
 
 		yep.append(this.tabs(depth));
-		yep.append("p{");
+		yep.append("p {");
 
-		for (Double i : this.getCoefficients()) {
-			yep.append(i.toString());
+		for (int i=0; i<this.getDegree()-1; i++) {
+			yep.append(this.get(i));
+			yep.append(", ");
 		}
 
+		yep.append(this.get(this.getDegree()-1));
 		yep.append("}");
 		return yep.toString();
 	}

@@ -41,7 +41,7 @@ public class Sum extends Expression {
 	}
 
 
-	public double getCoeff(int i) {
+	public double getC(int i) {
 		return this.getCs().get(i);
 	}
 
@@ -171,8 +171,10 @@ public class Sum extends Expression {
 	@Override
 	public String saveString(int depth) {
 		/* Looks like
-		 * + {1.0, 1.0, 1.0, -1.0, 1.0} [
-		 * 		p {1.0, 2.0, 3.0, 4.0};
+		 * + {1.0, 1.0, 1.0, -1.0, 2.0} [
+		 * 		p {1.0, 2.0, 3.0, 4.0} (
+		 * 			p {1.2, 4.5, 7.0};
+		 * 		);
 		 * 		e {1.0, 2.0};
 		 * 		... rest of Functions similarly
 		 * ]
@@ -183,12 +185,12 @@ public class Sum extends Expression {
 		ss.append(this.tabs(depth));
 		ss.append("+ {");
 
-		for (Double c : this.getCs().subList(0, numElements)){ //don't remember if sublist is inclusive or exclusive on the end COULD BE A BUG TODO
+		for (Double c : this.getCs().subList(0, numElements-1)){ //don't remember if sublist is inclusive or exclusive on the end COULD BE A BUG TODO
 			ss.append(c);
 			ss.append(", ");
 		}
 
-		ss.append(this.getCoeff(numElements));
+		ss.append(this.getC(numElements-1));
 		ss.append("} [\n");
 
 		for (Function f : this.getFs()) {

@@ -5,8 +5,9 @@ import java.util.Arrays;
 public class testFile {
 
 	public static void main(String[] args) {
-		ArrayList<Double> polyCoeff = new ArrayList<Double>();
+		Loader L = new Loader();
 
+		ArrayList<Double> polyCoeff = new ArrayList<Double>();
 		polyCoeff.add(7.0); polyCoeff.add(3.0); polyCoeff.add(1.0); polyCoeff.add(2.0);
 		// 7 + 3x + x^2 + 2x^3
 		
@@ -66,6 +67,12 @@ public class testFile {
 		//should print false, true, true, false
 
 		System.out.println();
+
+
+		System.out.println(oneByOne.saveString());
+		System.out.println(L.parseFunction(oneByOne.saveString()));
+		System.out.println();
+
 
 
 		Polynomial extraPoly = new Polynomial(calcAtOnce);
@@ -154,8 +161,15 @@ public class testFile {
 			System.out.print(atInitSum.evaluate(i)+" ");
 			//should print 15 15 15 34 34 34 121 121 121 312 312 312
 		}
-		
+
+		Sum ddxSum = (Sum) atInitSum.differentiate();
+
 		System.out.println(atInitSum.evaluate(calcAtOnce));
+		System.out.println();
+
+		System.out.println(atInitSum.saveString());
+		System.out.println(atInitSum.equals(L.parseFunction(atInitSum.saveString())));
+		System.out.println(ddxSum.saveString());
 		System.out.println();
 
 		ArrayList<Function> toMultiply = new ArrayList<Function>();
@@ -163,7 +177,49 @@ public class testFile {
 		Product xOneByOne = new Product();
 		Product xAllAtOnce = new Product();
 		Product xAtInit = new Product(toMultiply);
+
+		for (Function f : toMultiply) {
+			xOneByOne.add(f);
+		}
 		
+		xAllAtOnce.addAll(toMultiply);
+
+
+		for (double i = 0.0; i < 4; i++) {
+			System.out.print(xAllAtOnce.evaluate(i)+" ");
+			System.out.print(xOneByOne.evaluate(i)+" ");
+			System.out.print(xAtInit.evaluate(i)+" ");
+			//should print 135 135 135 204 204 204 1573 1573 1573 9360 9360 9360
+		}
+
+		Sum ddxProd = (Sum) xAtInit.differentiate();
+
+		System.out.println(xAllAtOnce.evaluate(calcAtOnce));
+		
+		System.out.println();
+		System.out.println(xAtInit.saveString());
+		System.out.println(xAtInit.equals(L.parseFunction(xAtInit.saveString()))); //still doesn't hava an overwritten equals method TODO
+		System.out.println(ddxProd.saveString());
+		System.out.println();
+
+
+		Exponential noInput = new Exponential();		 //should be e^x
+		Exponential multOnly = new Exponential(2.0);	 //should be e^2x
+		Exponential baseToo = new Exponential(1.0, 2.0); //should be 2^x
+
+		for (double i = 0.0; i < 4; i++) {
+			System.out.print(noInput.evaluate(i) + " ");
+			System.out.print(multOnly.evaluate(i) + " ");
+			System.out.print(baseToo.evaluate(i) + " ");
+			//1 1 1 e e^2 2 e^2 e^4 4 e^3 e^6 8
+		}
+
+		System.out.println(noInput.evaluate(calcAtOnce));
+
+		System.out.println(noInput.toString());
+		System.out.println(noInput.differentiate().toString());
+		System.out.println(multOnly.saveString());
+		System.out.println(multOnly.differentiate().saveString());
 	}
 
 }

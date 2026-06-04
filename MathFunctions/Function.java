@@ -7,6 +7,10 @@ import java.util.ArrayList;
 
 public abstract class Function {
 
+	public String toString() {
+		return this.toStringCustom("x");
+	}
+
 	public abstract String toStringCustom(String base);
 	//toString method that gives the function with a variable other than x
 
@@ -44,6 +48,50 @@ public abstract class Function {
 		}
 
 		return tabs.toString();
+	}
+
+
+	public double newtonRaphson(double startx, double minError) {
+		Function fprime = this.differentiate();
+
+		double x = startx;
+		double f = this.evaluate(startx);
+
+		int i = 0;
+		while (f > minError) {
+			x -= f/fprime.evaluate(x);
+			f = this.evaluate(x);
+			i++;
+
+			if (i==1000) {
+				System.out.println("Newton-Raphson for "+this.toString()+"exceeded 1000 iterations.");
+				break;
+			}
+		}
+
+		return x;
+	}
+
+
+	public double newtonRaphson(double startx, double minError, int maxIterations) {
+		Function fprime = this.differentiate();
+
+		double x = startx;
+		double f = this.evaluate(startx);
+
+		int i = 0;
+		while (f > minError) {
+			x -= f/fprime.evaluate(x);
+			f = this.evaluate(x);
+			i++;
+
+			if (i == maxIterations) {	//kind of temporary
+				System.out.println("Newton-Raphson for "+this.toString()+"exceeded 1000 iterations.");
+				break;
+			}
+		}
+
+		return x;
 	}
 }
 
