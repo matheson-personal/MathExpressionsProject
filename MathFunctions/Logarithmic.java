@@ -4,11 +4,11 @@ public class Logarithmic extends Function {
 
 	public double c;
 	public double logA;
-	public double base;
+	public double base = -1;
 	public double a;
 
 
-	public Logarithmic(double base, double a) {
+	public Logarithmic(double a, double base) {
 		this.base = base;
 		this.a = a;
 
@@ -22,31 +22,31 @@ public class Logarithmic extends Function {
 	}
 
 
-	public Logarithmic (double base) {
-		this.base = base;
-		this.a = 1;
-
-		if (base == Math.E) {
-			this.c = 1;
-		} else {
-			this.c = 1/Math.log(base);
-		}
-
-		this.logA = 0;
+	public Logarithmic (double a) {
+		this.a = a;
+		this.c = 1;
+		this.logA = Math.log(a);
 	}
 
 
 	public Logarithmic() {
-		this.base = Math.E;
-		this.a = 1;
+		this.a = 0;
 		this.c = 1;
 		this.logA = 0;
 	}
 
 
 	@Override
-	public String toStringCustom(String base) {
-		return "log" + this.base + "(" + this.a + base + ")";
+	public String toStringCustom(String arg) {
+		String poo;
+
+		if (this.base < 0) {
+			poo = "e";
+		} else {
+			poo = Double.valueOf(this.base).toString();
+		}
+
+		return "log" + poo + "(" + this.a + arg + ")";
 	}
 
 
@@ -66,8 +66,8 @@ public class Logarithmic extends Function {
 
 	@Override
 	public Function differentiate() {
-		// TODO need quotient first and or -ve powers of x in polynomial idkkk
-		return null;
+		//d(ln(a) + c*ln(x))/dx = c/x
+		return new OneTerm(-1, this.c);
 	}
 
 
@@ -89,9 +89,16 @@ public class Logarithmic extends Function {
 
 		yep.append(this.tabs(depth));
 		yep.append("l {");
-		
-		yep.append(this.base);
-		yep.append(",");
+
+
+		if (this.base < 0) {
+			yep.append('e');
+
+		} else {
+			yep.append(this.base);
+		}
+
+		yep.append(", ");
 		yep.append(this.a);
 
 		yep.append("}");

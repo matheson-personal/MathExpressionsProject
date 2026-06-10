@@ -2,9 +2,9 @@ import java.util.ArrayList;
 
 public class Exponential extends Function {
 
-	double multiplier;
-	double linearFactor = 1;
-	double base = -1;
+	public double multiplier;
+	public double linearFactor = 1;
+	public double base = -1;
 
 
 	public Exponential() {
@@ -19,6 +19,12 @@ public class Exponential extends Function {
 
 	public Exponential(double multiplier, double base) {
 		this.multiplier = multiplier * Math.log(base);
+	}
+
+
+	public Exponential(double multiplier, double base, double linearFactor) {
+		this.multiplier = multiplier * Math.log(base);
+		this.linearFactor = linearFactor;
 	}
 
 
@@ -58,7 +64,7 @@ public class Exponential extends Function {
 	public Function differentiate() {
 		Exponential newExp = new Exponential(this.multiplier);
 		newExp.linearFactor = this.multiplier * this.linearFactor;
-		return null;
+		return newExp;
 	}
 
 
@@ -80,17 +86,20 @@ public class Exponential extends Function {
 
 		yep.append(this.tabs(depth));
 		yep.append("e {");
-		
+
+
+		yep.append(this.multiplier);
+		yep.append(", ");
+
+
 		if (this.base == -1) {
 			yep.append('e');
 		} else {
 			yep.append(this.base);
 		}
 
-		yep.append(',');
-		yep.append(this.multiplier);
 
-		yep.append(',');
+		yep.append(", ");
 		yep.append(this.linearFactor);
 
 		yep.append('}');

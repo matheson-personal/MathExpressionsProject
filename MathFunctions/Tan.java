@@ -56,9 +56,10 @@ public class Tan extends Trig {
 
 
 	@Override
-	public Trig differentiate() {
-		//requires quotient TODO
-		return null;
+	public Functional differentiate() {
+		Functional newfunc = new Functional(new OneTerm(-2), 
+											new Cos(this.getFreq(), this.getPhase(), this.getC()));
+		return newfunc;
 	}
 
 

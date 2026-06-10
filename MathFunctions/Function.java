@@ -52,24 +52,7 @@ public abstract class Function {
 
 
 	public double newtonRaphson(double startx, double minError) {
-		Function fprime = this.differentiate();
-
-		double x = startx;
-		double f = this.evaluate(startx);
-
-		int i = 0;
-		while (f > minError) {
-			x -= f/fprime.evaluate(x);
-			f = this.evaluate(x);
-			i++;
-
-			if (i==1000) {
-				System.out.println("Newton-Raphson for "+this.toString()+"exceeded 1000 iterations.");
-				break;
-			}
-		}
-
-		return x;
+		return newtonRaphson(startx, minError, 1000);
 	}
 
 
@@ -92,6 +75,11 @@ public abstract class Function {
 		}
 
 		return x;
+	}
+
+
+	public void saveFunction(String filePath, String comments) {
+		//TODO
 	}
 }
 

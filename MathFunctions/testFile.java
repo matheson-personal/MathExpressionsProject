@@ -43,7 +43,7 @@ public class testFile {
 
 
 
-		Polynomial ddx = atInit.differentiate();
+		Polynomial ddx = (Polynomial) atInit.differentiate();
 
 		System.out.println(ddx.toString());
 		//should print 3.0 + 2.0x + 6.0x^2
@@ -220,6 +220,36 @@ public class testFile {
 		System.out.println(noInput.differentiate().toString());
 		System.out.println(multOnly.saveString());
 		System.out.println(multOnly.differentiate().saveString());
-	}
 
+
+		System.out.println();
+
+		Logarithmic log2_4x = new Logarithmic(4, 2);
+		Logarithmic ln_ex = new Logarithmic(Math.E);
+		Logarithmic ln = new Logarithmic();
+
+		double two = 2;
+		double e = Math.E;
+
+		for (double i=0; i<4; i++) {
+			System.out.print(log2_4x.evaluate(two)+" ");
+			System.out.print(ln_ex.evaluate(e)+" ");
+			System.out.print(ln.evaluate(e)+", ");
+			two *=2; e*=Math.E;
+			//3.0 2.0 1.0, 4.0 3.0 2.0, 5.0 4.0 3.0, 6.0 5.0 4.0, 
+		}
+
+		System.out.println(ln_ex.evaluate(calcAtOnce));
+		// -Infinity, 1.0, 1.6931471805599454, 2.09861228866811
+
+		//ddx not implemented yet!!!!!!!!!! TODO
+
+		System.out.println("\n\n"+log2_4x.saveString());
+		System.out.println(ln_ex.saveString());
+
+		String polyWithCommentsTest = "p {1,7.7,2.0,50.0,0,9.0,0,10.0} in theory i can just type anything after the parser considers the function finished";
+		Polynomial nowShouldBeAWorkingPolynomial = (Polynomial) L.parseFunction(polyWithCommentsTest);
+		System.out.println(nowShouldBeAWorkingPolynomial.saveString());
+		//yep that works
+	}
 }

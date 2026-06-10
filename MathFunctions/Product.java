@@ -5,8 +5,9 @@ import java.util.ArrayList;
 
 public class Product extends Expression {
 
-	ArrayList<Function> functionProducts = new ArrayList<Function>();
-	String functionSignature = "x[";
+	public ArrayList<Function> functionProducts = new ArrayList<Function>();
+	public String functionSignature = "x[";
+	public double k = 1;
 
 
 	public Product() {
@@ -32,8 +33,12 @@ public class Product extends Expression {
 	}
 
 
+	public double getK() {
+		return this.k;
+	}
+
 	@Override
-	public Expression differentiate() {
+	public Function differentiate() {
 		/*uses product rule to differentiate the product of two or more Functions. Returns an Expression 
 		containing Products with each element of this Product differentiated and multiplied by the rest.
 
@@ -43,17 +48,30 @@ public class Product extends Expression {
 		return type is expression just in case there is only one nonzero function to sum, but thats later TODO
 		*/
 
-		Sum sum = new Sum();
+		ArrayList<Function> sum = new ArrayList<Function>();
 
 		for (int i=0; i < this.functionProducts.size(); i++) {
 			Function ddx = this.getFunc(i).differentiate();
 			Product yep = new Product(this.ddxHelper(i));
 			yep.add(ddx);
 
-			sum.add(yep);
+			if (yep.getK() == 0) {
+				continue;
+
+			} else {
+				sum.add(yep);
+			}
 		}
 
-		return sum;
+		if (sum.size() == 0) {
+			return new Constant(0); //if all differentials are 0, ddx=0
+
+		} else if (sum.size() == 1) { //if all but one contributions, no need for it to be inside a Sum
+			return sum.get(0);
+
+		}
+
+		return new Sum(sum);
 	}
 
 	//before I used clone, then remove but the return type is Object. Looked much cleaner and was probably more performant
@@ -134,7 +152,7 @@ public class Product extends Expression {
 			this.addAll(productDetected.getFs());
 
 		} else if (f.getFuncType() == "k") {
-			System.out.println("Time to implement collecting constants");
+			this.k *= f.evaluate(0);
 
 		} else {
 			this.getFs().add(f);

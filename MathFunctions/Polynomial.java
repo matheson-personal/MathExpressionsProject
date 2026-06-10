@@ -83,13 +83,6 @@ public class Polynomial extends Function{
 	}
 
 
-	// DOESN'T TAKE INTO ACCOUNT THAT IF PARAMETERISED MULTIPLE TIMES IT WILL NEED ANOTHER BASE TO DISTINGUISH
-	// perhaps each Function in an Expression should be given its own letter with the deepest being functions in x
-
-	// Future me here. This is still an issue, but responsibility will be referred to the new Functional class
-	// the deepest level will always be x, and every other function in an expression will be f_ followed by a unique integer
-
-	// this will require a decent amount of thought TODO
 	public String toString() {
 		int i = 0;
 		ArrayDeque<String> terms = new ArrayDeque<>(10);
@@ -260,8 +253,12 @@ public class Polynomial extends Function{
 
 
 	@Override
-	public Polynomial differentiate() {
+	public Function differentiate() {
 		ArrayList<Double> differentiated = new ArrayList<>();
+
+		if (this.getCoefficients().size() == 2) {
+			return new Constant(2*this.get(1));
+		}
 
 		for (int i=1; i < this.getDegree(); i++) {
 			Double currentTerm = this.get(i);

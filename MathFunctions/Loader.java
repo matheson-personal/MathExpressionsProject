@@ -4,13 +4,14 @@ import java.util.HashMap;
 import java.nio.file.*;
 
 /* TODO
- * 		think about comments section? Parser can read until special character
- * 		think about custom written functions being used in formulae - u {funcName, filepath(?)}
- * 			-> make a new object to point to function, or add name variable to superclass
+ * 		think about comments section? Parser can read until special character <- after the function ends, the parser doesn't care
+ * 			^->INSTEAD loadFunc will take responsibility and allow for a single file to hold multiple Functions?
+ * 				^->just has to look for the start of each function. cut at the start of next to avoid too lazy coding
+ *
+ * 		think about custom written functions being used in formulae - u {funcName, filepath(?)} done
  * 			-> Loader object can store loaded functions? maybe then functions shouldn't be static, at least parseFunction?
- * 
- * 		funcName can be the key for a map containing loaded custom functions
- * 		u {funcName} tries to access it, but if it fails alerts the user that it hasn't been loaded in
+ * 		unfortunate but they can't all be static if they wanna access already loaded u Functions
+ * 		maybe there can be a static copy that has to reload it everytime if they can't be bothered with a Loader object??
  */
 public class Loader {
 
@@ -57,6 +58,7 @@ public class Loader {
 		//SHOULD NOT COUNT INITIAL OPENED SQUARE BRACKET. Square brackets will be omitted when passing in the string funcList
 		//The counts below is to account for Expression objects inside Expression objects
 		//'(' brackets accounts for Functionals. The syntax for this may be changed TODO update this comment if+when this is done
+		//^^right now functionals hold functions inside square brackets but emotionally i would like if to be p(q) rather than f {} [p;q;]
 		int[] count = new int[2];
 		int marker = 0;
 		int funcStart = 0;
@@ -101,7 +103,6 @@ public class Loader {
 		} else if (funcType == 'p') {
 			return makePolynomial(argList);
 
-		/* TODO - classes not implemented yet
 		} else if (funcType == 'l') {
 			return makeLogarithmic(argList);
 
@@ -119,7 +120,6 @@ public class Loader {
 
 		} else if (funcType == 't') {
 			return makeTan(argList);
-		*/
 
 		} else if (funcType == '+') {
 			return makeSum(argList, funcList);
@@ -129,6 +129,9 @@ public class Loader {
 
 		} else if (funcType == 'f') {
 			return makeFunctional(argList, funcList);
+
+		} else if (funcType == '^') {
+			return makeSpindle(argList, funcList);
 
 		} else {
 			System.out.println("Func type \"" + funcType + "\" not recognised.");
@@ -183,6 +186,10 @@ public class Loader {
 	} 
 
 
+	public static Constant makeConstant(String argList) {
+		return new Constant(Double.valueOf(argList));
+	}
+
 	public static Polynomial makePolynomial(String argList) {
 		//Takes a String of the contents of curly brackets following the p. Curly brackets are Excluded!!!!!!
 		//returns polyomial with coefficients given by argList. Index is equal to the power of x
@@ -193,6 +200,62 @@ public class Loader {
 		return new Polynomial(coefficients);
 	}
 
+
+	public static Exponential makeExponential(String argList) {
+		String[] args = argList.split(",");
+
+		double multiplier = Double.valueOf(args[0]);
+		double factor = Double.valueOf(args[2]);
+
+		if (args[1].matches("\s*e\s*")) {
+			Exponential finagle = new Exponential(multiplier);
+			finagle.linearFactor = factor; //i might let -1 for base just return an exponential with base e
+			return finagle;
+		}
+
+		return new Exponential(multiplier, Double.valueOf(args[1]), factor);
+	}
+
+
+	//a, base
+	public static Logarithmic makeLogarithmic(String argList) {
+		String[] args = argList.split(",");
+
+		double a = Double.valueOf(args[0]);
+
+		if (args[1].matches("\s*e\s*")) {
+			return new Logarithmic(a);
+		}
+
+		return new Logarithmic(a, Double.valueOf(args[1]));
+	}
+
+
+	public static Sin makeSin(String argList) {
+		String[] poo = argList.split(",");
+		double freq = Double.valueOf(poo[0]);
+		double phase = Double.valueOf(poo[1]);
+		double c = Double.valueOf(poo[2]);
+		return new Sin(freq, phase, c);
+	}
+
+
+	public static Cos makeCos(String argList) {
+		String[] poo = argList.split(",");
+		double freq = Double.valueOf(poo[0]);
+		double phase = Double.valueOf(poo[1]);
+		double c = Double.valueOf(poo[2]);
+		return new Cos(freq, phase, c);
+	}
+
+
+	public static Tan makeTan(String argList) {
+		String[] poo = argList.split(",");
+		double freq = Double.valueOf(poo[0]);
+		double phase = Double.valueOf(poo[1]);
+		double c = Double.valueOf(poo[2]);
+		return new Tan(freq, phase, c);
+	}
 
 	//in future maybe some way to use wrappers since sum and product methods are all similar
 
@@ -240,6 +303,30 @@ public class Loader {
 		return new Functional(f, u);
 	}
 
+
+	public Function makeSpindle(String argList, String funcList) {
+		ArrayList<String> functionList = splitFuncList(funcList);
+
+		Function f = parseFunction(functionList.get(0));
+
+		//if f is constant, a Functional of an Exponential is much better, as its differential is simpler
+		//might be a tad more performant since a constant no longer needs to be evaluated a billion times
+		if (f.getFuncType() == "k") {
+			Constant k = (Constant) f;
+			Exponential yep = new Exponential(1, k.getValue());
+			Function g = parseFunction(functionList.get(1));
+
+			return new Functional(yep, g);
+
+		} else if (!(Boolean.valueOf(argList))) {
+			return new Power(f, Double.valueOf(functionList.get(1)));
+
+		}
+
+		Function g = parseFunction(functionList.get(1));
+
+		return new Spindle(f, g);
+	}
 
 
 	public Function parseFunction(String funcString) {
