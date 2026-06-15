@@ -8,27 +8,31 @@ There is also functionality to return any object as a pseudocode string that can
 The pseudo-code is structured as follows:
 
 For individual Functions
+```
 v Function type
 p {1, 3, 4, 6, 0, 0, 2.5}
    ^  ^  ^ everything within curly brackets are arguments
+```
 
+```
 For Combining Functions (and in general Functions that store other Functions)
-+ {1, -1, 4} [ <-some combining Functions still have non-Function arguments
-    p {2,3,4}; <-Internal Functions are inside square brackets and are separated by semicolons
++ {1, -1, 4} [ <- some combining Functions still have non-Function arguments
+    p {2,3,4}; <- Internal Functions are inside square brackets and are separated by semicolons
     e {3, 0.6};
-    x {} [     <-some combining Functions do not have arguments, but still must have curly brackets
-        s {1,5,10}; <-the saveString method automatically indents, but this is not necessary for the parser to understand
+    x {} [     <- some combining Functions do not have arguments, but still must have curly brackets
+        s {1,5,10}; <- the saveString method automatically indents, but this is not necessary for the parser to understand
         c {1,5,1};
-    ]; <-combining functions finish on the next line in saveStrings but again this is not necessary
+    ]; <- combining functions finish on the next line in saveStrings but again this is not necessary
 ]
+```
 
 List of implemented Functions:
-(p)olynomial
-(e)xponential
-(l)ogarithmic
-(s)in
-(c)os
-(t)an
-(x)product
-(+)sum
-(^)spindle
+ - (p)olynomial
+ - (e)xponential
+ - (l)ogarithmic
+ - (s)in
+ - (c)os
+ - (t)an
+ - (x)product
+ - (+)sum
+ - (^)spindle

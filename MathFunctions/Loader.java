@@ -96,46 +96,34 @@ public class Loader {
 
 	public Function pointToProtocol (char funcType, String argList, String funcList) {
 		//Cleans up the method parseFunction by pointing to the interpretation method for the correct funcType
-		//this could be a switch maybe TODO to make it look nicer
-		if (funcType == 'u') {
-			return makeUser(argList);
-
-		} else if (funcType == 'p') {
-			return makePolynomial(argList);
-
-		} else if (funcType == 'l') {
-			return makeLogarithmic(argList);
-
-		} else if (funcType == 'e') {
-			return makeExponential(argList);
-
-		} else if (funcType == 'k') {
-			return makeConstant(argList);
-
-		} else if (funcType == 's') {
-			return makeSin(argList);
-
-		} else if (funcType == 'c') {
-			return makeCos(argList);
-
-		} else if (funcType == 't') {
-			return makeTan(argList);
-
-		} else if (funcType == '+') {
-			return makeSum(argList, funcList);
-
-		} else if (funcType == 'x') {
-			return makeProduct(argList, funcList);
-
-		} else if (funcType == 'f') {
-			return makeFunctional(argList, funcList);
-
-		} else if (funcType == '^') {
-			return makeSpindle(argList, funcList);
-
-		} else {
-			System.out.println("Func type \"" + funcType + "\" not recognised.");
-			return null;
+		switch (funcType) {
+			case 'u':
+				return makeUser(argList);
+			case 'p':
+				return makePolynomial(argList);
+			case 'l':
+				return makeLogarithmic(argList);
+			case 'e':
+				return makeExponential(argList);
+			case 'k':
+				return makeConstant(argList);
+			case 's':
+				return makeSin(argList);
+			case 'c':
+				return makeCos(argList);
+			case 't':
+				return makeTan(argList);
+			case '+':
+				return makeSum(argList, funcList);
+			case 'x':
+				return makeProduct(argList, funcList);
+			case 'f':
+				return makeFunctional(argList, funcList);
+			case '^':
+				return makeSpindle(argList, funcList);
+			default:
+				System.out.println("Unknown Function " + funcType);
+				return null;
 		}
 	}
 
