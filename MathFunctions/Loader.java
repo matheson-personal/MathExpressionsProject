@@ -122,8 +122,10 @@ public class Loader {
 			case '^':
 				return makeSpindle(argList, funcList);
 			default:
-				throw new IlleagalArgumentException("Func type \"" + funcType + "\" not recognised.");
+				System.out.println("Unknown Function " + funcType);
+				return null;
 		}
+	}
 
 
 	public String loadInOneLine(String filename) {
